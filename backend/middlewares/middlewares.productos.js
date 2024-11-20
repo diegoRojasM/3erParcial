@@ -21,14 +21,15 @@ const registrarProducto = async (req, res) => {
   }
 };
 
-// Función para obtener todos los productos
+// Obtener productos (con filtro opcional por categoría)
 const obtenerProductos = async (req, res) => {
   try {
-    const productos = await Producto.find();
+    const { categoria } = req.query;
+    const filtros = categoria ? { categoria } : {};
+    const productos = await Producto.find(filtros);
     res.json(productos);
   } catch (error) {
-    console.error('Error al obtener productos:', error);
-    res.status(500).json({ mensaje: 'Error al obtener productos.', error });
+    res.status(500).json({ mensaje: 'Error al obtener los productos.', error });
   }
 };
 
