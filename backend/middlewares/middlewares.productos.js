@@ -1,5 +1,3 @@
-// middlewares/middlewares.productos.js
-
 const Producto = require('../models/models.producto.models'); // Importa el modelo de Producto
 
 // Función para registrar un nuevo producto
