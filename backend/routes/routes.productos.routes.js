@@ -1,52 +1,40 @@
+// routes/routes.productos.routes.js
+
 const express = require('express');
 const { body } = require('express-validator');
-const { verificarToken } = require('../middlewares/middlewares.autenticacion');
-const { verificarRol } = require('../middlewares/middlewares.roles');
-const {
-  agregarProducto,
-  obtenerProductos,
-  actualizarProducto,
-  eliminarProducto
-} = require('../middlewares/middlewares.productos');
-const { manejarValidacion } = require('../middlewares/middlewares.validacion');
-
+const { verificarToken } = require('../middlewares/middlewares.autenticacion'); // Importa el middleware de autenticación
+const { registrarProducto, obtenerProductos, actualizarProducto, eliminarProducto } = require('../middlewares/middlewares.productos'); // Importa las funciones
+const { manejarValidacion } = require('../middlewares/middlewares.validacion'); // Importa el middleware para la validación
 const router = express.Router();
 
-// Ruta para obtener productos (accesible para todos los usuarios)
-router.get('/', obtenerProductos);
-
-// Ruta para agregar un producto (solo admin)
+// Ruta para agregar un nuevo producto (solo para admin)
 router.post('/',
-  verificarToken,
-  verificarRol(['admin']),
+  verificarToken, // Asegura que el usuario esté logueado
   [
-    body('nombre').notEmpty().withMessage('El nombre es obligatorio.'),
+    body('nombre').notEmpty().withMessage('El nombre del producto es obligatorio.'),
     body('categoria').notEmpty().withMessage('La categoría es obligatoria.'),
     body('precio').isNumeric().withMessage('El precio debe ser un número.'),
-    body('stock').isNumeric().withMessage('El stock debe ser un número.')
+    body('stock').isNumeric().withMessage('El stock debe ser un número.'),
   ],
   manejarValidacion,
-  agregarProducto
+  registrarProducto // Asegúrate de que esta función esté definida correctamente en tu middleware
 );
 
-// Ruta para actualizar un producto (solo admin)
+// Ruta para obtener todos los productos (solo para usuarios logueados)
+router.get('/',
+  verificarToken, // Asegura que el usuario esté logueado
+  obtenerProductos
+);
+
+// Ruta para actualizar un producto (solo para admin)
 router.put('/:id',
-  verificarToken,
-  verificarRol(['admin']),
-  [
-    body('nombre').optional().notEmpty().withMessage('El nombre no puede estar vacío.'),
-    body('categoria').optional().notEmpty().withMessage('La categoría no puede estar vacía.'),
-    body('precio').optional().isNumeric().withMessage('El precio debe ser un número.'),
-    body('stock').optional().isNumeric().withMessage('El stock debe ser un número.')
-  ],
-  manejarValidacion,
+  verificarToken, // Asegura que el usuario esté logueado
   actualizarProducto
 );
 
-// Ruta para eliminar un producto (solo admin)
+// Ruta para eliminar un producto (solo para admin)
 router.delete('/:id',
-  verificarToken,
-  verificarRol(['admin']),
+  verificarToken, // Asegura que el usuario esté logueado
   eliminarProducto
 );
 

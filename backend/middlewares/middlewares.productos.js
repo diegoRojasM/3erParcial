@@ -1,34 +1,45 @@
-const Producto = require('../models/models.producto.models');
+// middlewares/middlewares.productos.js
 
-// Agregar un producto
-const agregarProducto = async (req, res) => {
+const Producto = require('../models/models.producto.models'); // Importa el modelo de Producto
+
+// Función para registrar un nuevo producto
+const registrarProducto = async (req, res) => {
   try {
     const { nombre, categoria, precio, stock } = req.body;
-    const nuevoProducto = new Producto({ nombre, categoria, precio, stock });
+
+    const nuevoProducto = new Producto({
+      nombre,
+      categoria,
+      precio,
+      stock
+    });
+
     await nuevoProducto.save();
+
     res.status(201).json({ mensaje: 'Producto agregado exitosamente.', producto: nuevoProducto });
   } catch (error) {
-    res.status(500).json({ mensaje: 'Error al agregar el producto.', error });
+    console.error('Error al registrar producto:', error);
+    res.status(500).json({ mensaje: 'Error al registrar el producto.', error });
   }
 };
 
-// Obtener productos (con filtro opcional por categoría)
+// Función para obtener todos los productos
 const obtenerProductos = async (req, res) => {
   try {
-    const { categoria } = req.query;
-    const filtros = categoria ? { categoria } : {};
-    const productos = await Producto.find(filtros);
+    const productos = await Producto.find();
     res.json(productos);
   } catch (error) {
-    res.status(500).json({ mensaje: 'Error al obtener los productos.', error });
+    console.error('Error al obtener productos:', error);
+    res.status(500).json({ mensaje: 'Error al obtener productos.', error });
   }
 };
 
-// Actualizar un producto
+// Función para actualizar un producto
 const actualizarProducto = async (req, res) => {
   try {
     const { id } = req.params;
     const { nombre, categoria, precio, stock } = req.body;
+
     const productoActualizado = await Producto.findByIdAndUpdate(
       id,
       { nombre, categoria, precio, stock },
@@ -41,14 +52,16 @@ const actualizarProducto = async (req, res) => {
 
     res.json({ mensaje: 'Producto actualizado exitosamente.', producto: productoActualizado });
   } catch (error) {
+    console.error('Error al actualizar producto:', error);
     res.status(500).json({ mensaje: 'Error al actualizar el producto.', error });
   }
 };
 
-// Eliminar un producto
+// Función para eliminar un producto
 const eliminarProducto = async (req, res) => {
   try {
     const { id } = req.params;
+
     const productoEliminado = await Producto.findByIdAndDelete(id);
 
     if (!productoEliminado) {
@@ -57,8 +70,9 @@ const eliminarProducto = async (req, res) => {
 
     res.json({ mensaje: 'Producto eliminado exitosamente.' });
   } catch (error) {
+    console.error('Error al eliminar producto:', error);
     res.status(500).json({ mensaje: 'Error al eliminar el producto.', error });
   }
 };
 
-module.exports = { agregarProducto, obtenerProductos, actualizarProducto, eliminarProducto };
+module.exports = { registrarProducto, obtenerProductos, actualizarProducto, eliminarProducto };
