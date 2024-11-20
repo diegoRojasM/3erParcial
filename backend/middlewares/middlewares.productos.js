@@ -34,6 +34,23 @@ const obtenerProductos = async (req, res) => {
   }
 };
 
+// Función para obtener un solo producto por ID
+const obtenerProductoPorId = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const producto = await Producto.findById(id); // Buscar producto por ID
+
+    if (!producto) {
+      return res.status(404).json({ mensaje: 'Producto no encontrado.' });
+    }
+
+    res.json(producto); // Devolver el producto encontrado
+  } catch (error) {
+    console.error('Error al obtener producto:', error);
+    res.status(500).json({ mensaje: 'Error al obtener el producto.', error });
+  }
+};
+
 // Función para actualizar un producto
 const actualizarProducto = async (req, res) => {
   try {
@@ -75,4 +92,4 @@ const eliminarProducto = async (req, res) => {
   }
 };
 
-module.exports = { registrarProducto, obtenerProductos, actualizarProducto, eliminarProducto };
+module.exports = { registrarProducto, obtenerProductos, obtenerProductoPorId, actualizarProducto, eliminarProducto };
